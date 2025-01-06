@@ -1,20 +1,31 @@
 use std::sync::Arc;
 
-use crate::domain::{repositories::adventurers::AdventurerRepository, value_objects::adventutrt_models::RegisterAdverturerModel};
-use anyhow::Result;
-pub struct AdventurersUseCase<T>
+use axum::{extract::State, response::IntoResponse, routing::post, Json, Router};
+
+use crate::{
+    application::usecases::adventurers::AdventurersUseCase,
+    domain::{
+        repositories::adventurers::AdventurerRepository,
+        value_objects::adventutrt_models::RegisterAdverturerModel,
+    },
+    infra::postgres::{
+        postgres_connection::PgPoolSquad, repositories::adventurers::AdventurerPostgres,
+    },
+};
+
+pub fn routes(db_pool: Arc<PgPoolSquad>) -> Router {
+    let adventurers_repository = AdventurerPostgres::new(db_pool);
+    let adventurers_usecase = AdventurersUseCase::new(Arc::new(adventurers_repository));
+    Router::new()
+        .route("/", post(register))
+        .with_state(Arc::new(adventurers_usecase))
+}
+pub async fn register<T>(
+    State(adventurers_usecase): State<Arc<AdventurersUseCase<T>>>,
+    Json(register_adventurer_model): Json<RegisterAdverturerModel>,
+) -> impl IntoResponse
 where
     T: AdventurerRepository + Send + Sync,
 {
-    pub adventurers_repository: Arc<T>,
-}
-impl <T>AdventurersUseCase<T> where T: AdventurerRepository + Send + Sync {
-    pub fn new(adventurers_repository: Arc<T>) -> Self {
-        Self {
-            adventurers_repository,
-        }
-    }
-    pub async fn register(&self, mut register_adventurer_model:RegisterAdverturerModel) -> Result<i32> {
-        unimplemented!()
-    }
+    unimplemented!()
 }

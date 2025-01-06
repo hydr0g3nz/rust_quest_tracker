@@ -1,39 +1,73 @@
 use std::sync::Arc;
-use anyhow::Result;
-use crate::domain::repositories::{
-    adventurers::AdventurerRepository, guild_commanders::GuildCommanderRepository,
+
+use axum::{extract::State, response::IntoResponse, routing::post, Router};
+
+use crate::{
+    application::usecases::authentications,
+    domain::repositories::{
+        adventurers::AdventurerRepository, guild_commanders::GuildCommanderRepository,
+    },
+    infra::postgres::{
+        postgres_connection::PgPoolSquad,
+        repositories::{adventurers::AdventurerPostgres, guild_commanders::GuildCommanderPostgres},
+    },
 };
 
-pub struct AuthenticationsUseCases<T1, T2>
-where
-    T1: AdventurerRepository + Send + Sync,
-    T2: GuildCommanderRepository + Send + Sync,
-{
-    adventurer_repository: Arc<T1>,
-    guild_commander_repository: Arc<T2>,
-}
+pub fn routes(db_pool: Arc<PgPoolSquad>) -> Router {
+    let adventurers_repository = AdventurerPostgres::new(Arc::clone(&db_pool));
+    let guild_commander_repository = GuildCommanderPostgres::new(Arc::clone(&db_pool));
+    let authentications_usecase =
+        crate::application::usecases::authentications::AuthenticationsUseCases::new(
+            Arc::new(adventurers_repository),
+            Arc::new(guild_commander_repository),
+        );
 
-impl<T1, T2> AuthenticationsUseCases<T1, T2>
+    Router::new()
+        .route("/adventurers/login", post(adventurers_login))
+        .route(
+            "/adventurers/refresh_token",
+            post(adventurers_refresh_token),
+        )
+        .route("/guild_commanders/login", post(guild_commanders_login))
+        .route(
+            "/guild_commanders/refresh_token",
+            post(guild_commanders_refresh_token),
+        )
+        .with_state(Arc::new(authentications_usecase))
+}
+pub async fn adventurers_login<T1, T2>(
+    State(authentications_usecase): State<Arc<authentications::AuthenticationsUseCases<T1, T2>>>,
+) -> impl IntoResponse
 where
     T1: AdventurerRepository + Send + Sync,
     T2: GuildCommanderRepository + Send + Sync,
 {
-    pub fn new(adventurer_repository: Arc<T1>, guild_commander_repository: Arc<T2>) -> Self {
-        Self {
-            adventurer_repository,
-            guild_commander_repository,
-        }
-    }
-    pub async fn adventurer_login(&self, username: String, password: String) -> Result<i32> {
-        unimplemented!()
-    }
-    pub async fn guild_commander_login(&self, username: String, password: String) -> Result<i32> {
-        unimplemented!()
-    }
-    pub async fn adventurer_refresh_token(&self, token: String) -> Result<i32> {
-        unimplemented!()
-    }
-    pub async fn guild_commander_refresh_token(&self, token: String) -> Result<i32> {
-        unimplemented!()
-    }
+    unimplemented!()
+}
+pub async fn guild_commanders_login<T1, T2>(
+    State(authentications_usecase): State<Arc<authentications::AuthenticationsUseCases<T1, T2>>>,
+) -> impl IntoResponse
+where
+    T1: AdventurerRepository + Send + Sync,
+    T2: GuildCommanderRepository + Send + Sync,
+{
+    unimplemented!()
+}
+pub async fn adventurers_refresh_token<T1, T2>(
+    State(authentications_usecase): State<Arc<authentications::AuthenticationsUseCases<T1, T2>>>,
+) -> impl IntoResponse
+where
+    T1: AdventurerRepository + Send + Sync,
+    T2: GuildCommanderRepository + Send + Sync,
+{
+    unimplemented!()
+}
+pub async fn guild_commanders_refresh_token<T1, T2>(
+    State(authentications_usecase): State<Arc<authentications::AuthenticationsUseCases<T1, T2>>>,
+) -> impl IntoResponse
+where
+    T1: AdventurerRepository + Send + Sync,
+    T2: GuildCommanderRepository + Send + Sync,
+{
+    unimplemented!()
 }
