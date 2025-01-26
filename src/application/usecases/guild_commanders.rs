@@ -1,9 +1,9 @@
 use std::sync::Arc;
 
-use crate::domain::{
+use crate::{domain::{
     repositories::guild_commanders::GuildCommanderRepository,
     value_objects::guild_commander_models::{self, RegisterGuildCommanderModel},
-};
+}, infra::argon2_hashing};
 use anyhow::Result;
 pub struct GuildCommandersUseCases<T>
 where
@@ -23,8 +23,14 @@ where
     }
     pub async fn register(
         &self,
-        register_guild_commander_model: RegisterGuildCommanderModel,
+        mut register_guild_commander_model: RegisterGuildCommanderModel,
     ) -> Result<i32> {
-        unimplemented!()
+        let hashed_password = argon2_hashing::hash(register_guild_commander_model.password.clone())?;
+        register_guild_commander_model.password = hashed_password;
+        let guild_commander_id = self
+            .guild_commander_repository
+            .register(register_guild_commander_model.to_entity())
+            .await?;
+        Ok(guild_commander_id)
     }
 }

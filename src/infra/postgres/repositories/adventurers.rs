@@ -1,8 +1,15 @@
 use std::sync::Arc;
 
 use crate::{
-    domain::{entities::adventurers::{AdventurerEntity, RegisterAdventurerEntity}, repositories::adventurers::AdventurerRepository, value_objects::adventutrt_models::RegisterAdverturerModel},
-    infra::postgres::{postgres_connection::PgPoolSquad, schemas::adventurers::{self, table}},
+    domain::{
+        entities::adventurers::{AdventurerEntity, RegisterAdventurerEntity},
+        repositories::adventurers::AdventurerRepository,
+        value_objects::adventutrt_models::RegisterAdverturerModel,
+    },
+    infra::postgres::{
+        postgres_connection::PgPoolSquad,
+        schemas::adventurers::{self, table},
+    },
 };
 use anyhow::Result;
 use axum::async_trait;

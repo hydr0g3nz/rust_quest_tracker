@@ -25,11 +25,11 @@ pub async fn start(config: Arc<DotEnvConfig>, db_pool: Arc<PgPoolSquad>) -> Resu
             routers::adventurers::routes(Arc::clone(&db_pool)),
         )
         .nest(
-            "/guild_commanders",
+            "/guild-commanders",
             routers::guild_commanders::routes(Arc::clone(&db_pool)),
         )
         .nest(
-            "/crew_switchboard",
+            "/crew-switchboard",
             routers::crew_switchboard::routers(Arc::clone(&db_pool)),
         )
         .nest(
