@@ -1,8 +1,5 @@
 use axum::{
-    extract::{Path, State},
-    response::IntoResponse,
-    routing::post,
-    Extension, Json, Router,
+    extract::{Path, State}, middleware, response::IntoResponse, routing::post, Extension, Json, Router
 };
 use std::sync::Arc;
 
@@ -19,6 +16,8 @@ use crate::{
     },
 };
 
+use super::middleware::guild_commanders_authorization;
+
 pub fn routes(db_pool: Arc<PgPoolSquad>) -> Router {
     let journey_ledger_repository = JourneyLedgerPostgres::new(Arc::clone(&db_pool));
     let quest_viewing_repository = QuestViewingPostgres::new(Arc::clone(&db_pool));
@@ -31,6 +30,7 @@ pub fn routes(db_pool: Arc<PgPoolSquad>) -> Router {
         .route("/in_the_journey", post(in_the_journey))
         .route("/to_complete", post(to_complete))
         .route("/to_failed", post(to_failed))
+        .route_layer(middleware::from_fn(guild_commanders_authorization))
         .with_state(Arc::new(journey_ledger_usecase))
 }
 

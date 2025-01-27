@@ -1,10 +1,7 @@
 use std::sync::Arc;
 
 use axum::{
-    extract::{Path, State},
-    response::IntoResponse,
-    routing::{delete, post},
-    Extension, Router,
+    extract::{Path, State}, middleware, response::IntoResponse, routing::{delete, post}, Extension, Router
 };
 
 use crate::{
@@ -20,6 +17,8 @@ use crate::{
     },
 };
 
+use super::middleware::adventurers_authorization;
+
 pub fn routers(db_pool: Arc<PgPoolSquad>) -> Router {
     let crew_switchboard_repository = CrewSwitchboardPostgres::new(Arc::clone(&db_pool));
     let quest_viewing_repository = QuestViewingPostgres::new(Arc::clone(&db_pool));
@@ -30,6 +29,7 @@ pub fn routers(db_pool: Arc<PgPoolSquad>) -> Router {
     Router::new()
         .route("/join/:quest_id", post(join))
         .route("/leave/:quest_id", delete(leave))
+        .route_layer(middleware::from_fn(adventurers_authorization))
         .with_state(Arc::new(crew_switchboard_usecase))
 }
 

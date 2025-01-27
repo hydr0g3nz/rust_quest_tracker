@@ -1,4 +1,4 @@
-use axum::{extract::{Path, State}, response::IntoResponse, routing::{delete, patch, post}, Extension, Json, Router};
+use axum::{extract::{Path, State}, middleware, response::IntoResponse, routing::{delete, patch, post}, Extension, Json, Router};
 
 use crate::{
     application::usecases::quest_ops::{self, QuestOpsUseCase},
@@ -9,6 +9,8 @@ use crate::{
     },
 };
 use std::sync::Arc;
+
+use super::middleware::guild_commanders_authorization;
 
 pub fn routes(db_pool: Arc<PgPoolSquad>) -> Router {
     let quest_ops_repository = QuestOpsPostgres::new(Arc::clone(&db_pool));
@@ -22,6 +24,7 @@ pub fn routes(db_pool: Arc<PgPoolSquad>) -> Router {
         .route("/add", post(add))
         .route("/edit/:quest_id", patch(edit))
         .route("/delete/:quest_id", delete(remove))
+        .route_layer(middleware::from_fn(guild_commanders_authorization))
         .with_state(Arc::new(quest_ops_usecase))
 }
 
