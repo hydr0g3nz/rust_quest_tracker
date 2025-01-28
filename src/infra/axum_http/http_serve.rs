@@ -37,11 +37,11 @@ pub async fn start(config: Arc<DotEnvConfig>, db_pool: Arc<PgPoolSquad>) -> Resu
             routers::journey_ledger::routes(Arc::clone(&db_pool)),
         )
         .nest(
-            "/quests-ops",
+            "/quest-ops",
             routers::quest_ops::routes(Arc::clone(&db_pool)),
         )
         .nest(
-            "/quests-viewing",
+            "/quest-viewing",
             routers::quest_viewing::routes(Arc::clone(&db_pool)),
         )
 

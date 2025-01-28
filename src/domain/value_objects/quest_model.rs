@@ -23,7 +23,7 @@ pub struct  AddQuestModel {
 }
 
 impl AddQuestModel {
-    pub fn to_entity(&self) -> AddQuestEntity {
+    pub fn to_entity(&self, guild_commander_id: i32) -> AddQuestEntity {
         AddQuestEntity{
             name: self.name.clone(),
             description: self.description.clone(),
