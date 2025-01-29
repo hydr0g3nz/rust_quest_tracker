@@ -1,5 +1,4 @@
 use super::default_routers;
-use crate::infra::axum_http::routers::crew_switchboard::routers;
 use crate::infra::postgres::postgres_connection::PgPoolSquad;
 use crate::{config::config_models::DotEnvConfig, infra::axum_http::routers};
 use anyhow::{Ok, Result};
@@ -30,7 +29,7 @@ pub async fn start(config: Arc<DotEnvConfig>, db_pool: Arc<PgPoolSquad>) -> Resu
         )
         .nest(
             "/crew-switchboard",
-            routers::crew_switchboard::routers(Arc::clone(&db_pool)),
+            routers::crew_switchboard::routes(Arc::clone(&db_pool)),
         )
         .nest(
             "/journey-ledger",
