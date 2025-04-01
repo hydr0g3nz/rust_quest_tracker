@@ -2,7 +2,10 @@ use super::default_routers;
 use crate::infra::postgres::postgres_connection::PgPoolSquad;
 use crate::{config::config_models::DotEnvConfig, infra::axum_http::routers};
 use anyhow::{Ok, Result};
+use axum::http::header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE};
+use axum::http::HeaderValue;
 use axum::{http::Method, routing::get, Router};
+use axum_extra::headers::ContentType;
 use std::{net::SocketAddr, sync::Arc, time::Duration};
 use tokio::net::TcpListener;
 use tower_http::{
@@ -59,8 +62,11 @@ pub async fn start(config: Arc<DotEnvConfig>, db_pool: Arc<PgPoolSquad>) -> Resu
                     Method::PUT,
                     Method::DELETE,
                     Method::PATCH,
+                    Method::OPTIONS,
                 ])
-                .allow_origin(Any),
+                .allow_origin("http://localhost:3000".parse::<HeaderValue>().unwrap())
+                .allow_credentials(true)
+                .allow_headers([AUTHORIZATION, ACCEPT,CONTENT_TYPE]),
         )
         .layer(TraceLayer::new_for_http());
 

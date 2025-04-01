@@ -59,7 +59,7 @@ where
             let mut act_cookie = Cookie::build(("act", passport.access_token.clone()))
                 .path("/")
                 .same_site(cookie::SameSite::Lax)
-                .http_only(true)
+                // .http_only(true)
                 .max_age(Duration::days(14));
 
             let mut rft_cookie = Cookie::build(("rft", passport.refresh_token.clone()))
@@ -108,13 +108,13 @@ where
                 let mut act_cookie = Cookie::build(("act", passport.access_token.clone()))
                     .path("/")
                     .same_site(cookie::SameSite::Lax)
-                    .http_only(true)
+                    // .http_only(true)
                     .max_age(Duration::days(14));
 
                 let mut rft_cookie = Cookie::build(("rft", passport.refresh_token.clone()))
                     .path("/")
                     .same_site(cookie::SameSite::Lax)
-                    .http_only(true)
+                    // .http_only(true)
                     .max_age(Duration::days(14));
 
                 if get_stage() == Stage::Production {
@@ -159,7 +159,7 @@ where
             let mut act_cookie = Cookie::build(("act", passport.access_token.clone()))
                 .path("/")
                 .same_site(cookie::SameSite::Lax)
-                .http_only(true)
+                // .http_only(true)
                 .max_age(Duration::days(14));
 
             let mut rft_cookie = Cookie::build(("rft", passport.refresh_token.clone()))
@@ -208,7 +208,7 @@ where
                 let mut act_cookie = Cookie::build(("act", passport.access_token.clone()))
                     .path("/")
                     .same_site(cookie::SameSite::Lax)
-                    .http_only(true)
+                    // .http_only(true)
                     .max_age(Duration::days(14));
 
                 let mut rft_cookie = Cookie::build(("rft", passport.refresh_token.clone()))
