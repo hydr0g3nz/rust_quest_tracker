@@ -16,3 +16,8 @@ impl RegisterAdverturerModel {
         }
     }
 }
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AdventurerViewModel {
+    pub id: i32,
+    pub username: String,
+}

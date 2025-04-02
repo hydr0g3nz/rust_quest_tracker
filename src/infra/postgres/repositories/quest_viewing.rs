@@ -7,8 +7,8 @@ use diesel::prelude::*;
 use crate::{
     domain::{
         entities::quests::QuestEntity, repositories::quest_viewing::QuestViewingRepository,
-        value_objects::board_checking_filter::BoardCheckingFilter,
-    }, infra::postgres::{postgres_connection::PgPoolSquad, schemas::{quest_adventurer_junction, quests}},
+        value_objects::{adventutrt_models::AdventurerViewModel, board_checking_filter::BoardCheckingFilter},
+    }, infra::postgres::{postgres_connection::PgPoolSquad, schemas::{adventurers, quest_adventurer_junction, quests}},
 
 };
 
@@ -68,5 +68,20 @@ impl QuestViewingRepository for QuestViewingPostgres {
             .first::<i64>(&mut conn)?;
 
         Ok(result)
+    }
+    async fn adventurers_by_quest_id(&self, quest_id: i32) -> Result<Vec<AdventurerViewModel>> {
+        let mut conn = Arc::clone(&self.db_pool).get()?;
+    
+        let results = adventurers::table
+            .inner_join(quest_adventurer_junction::table
+                .on(adventurers::id.eq(quest_adventurer_junction::adventurer_id)))
+            .filter(quest_adventurer_junction::quest_id.eq(quest_id))
+            .select((adventurers::id, adventurers::username))
+            .load::<(i32, String)>(&mut conn)?
+            .into_iter()
+            .map(|(id, username)| AdventurerViewModel { id, username })
+            .collect();
+    
+        Ok(results)
     }
 }

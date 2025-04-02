@@ -24,6 +24,7 @@ pub fn routes(db_pool: Arc<PgPoolSquad>) -> Router {
     Router::new()
         .route("/:quest_id", get(view_details))
         .route("/board-checking", get(board_checking))
+        .route("/:quest_id/adventurers", get(quest_adventurers)) 
         .with_state(Arc::new(quest_viewing_use_case))
 }
 
@@ -49,6 +50,18 @@ where
 {
     match quest_viewing_use_case.board_checking(&filter).await {
         Ok(quest_models) => (StatusCode::OK, Json(quest_models)).into_response(),
+        Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response(),
+    }
+}
+pub async fn quest_adventurers<T>(
+    State(quest_viewing_use_case): State<Arc<QuestViewingUseCase<T>>>,
+    Path(quest_id): Path<i32>,
+) -> impl IntoResponse
+where
+    T: QuestViewingRepository + Send + Sync,
+{
+    match quest_viewing_use_case.quest_adventurers(quest_id).await {
+        Ok(adventurers) => (StatusCode::OK, Json(adventurers)).into_response(),
         Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response(),
     }
 }

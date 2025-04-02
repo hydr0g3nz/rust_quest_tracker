@@ -4,7 +4,7 @@ use anyhow::Result;
 
 use crate::domain::{
     repositories::quest_viewing::QuestViewingRepository,
-    value_objects::{board_checking_filter::BoardCheckingFilter, quest_model::QuestModel},
+    value_objects::{adventutrt_models::AdventurerViewModel, board_checking_filter::BoardCheckingFilter, quest_model::QuestModel},
 };
 
 pub struct QuestViewingUseCase<T>
@@ -53,5 +53,13 @@ where
         }
 
         Ok(quests_model)
+    }
+    pub async fn quest_adventurers(&self, quest_id: i32) -> Result<Vec<AdventurerViewModel>> {
+        let adventurers = self
+            .quest_viewing_repository
+            .adventurers_by_quest_id(quest_id)
+            .await?;
+    
+        Ok(adventurers)
     }
 }
